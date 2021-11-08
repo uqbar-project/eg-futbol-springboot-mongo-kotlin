@@ -1,4 +1,4 @@
-package org.uqbar.futbol.controller
+package ar.edu.algo3.futbol.controller
 
 import io.swagger.annotations.ApiOperation
 import org.springframework.beans.factory.annotation.Autowired
@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
-import org.uqbar.futbol.service.EquipoService
+import ar.edu.algo3.futbol.service.EquipoService
 
 @RestController
 @CrossOrigin("*")

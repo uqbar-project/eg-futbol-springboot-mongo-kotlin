@@ -1,4 +1,4 @@
-package org.uqbar.futbol.domain
+package ar.edu.algo3.futbol.domain
 
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id

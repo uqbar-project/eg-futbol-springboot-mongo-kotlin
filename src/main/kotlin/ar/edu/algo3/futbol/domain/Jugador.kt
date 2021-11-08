@@ -1,4 +1,4 @@
-package org.uqbar.futbol.domain
+package ar.edu.algo3.futbol.domain
 
 import java.io.Serializable
 

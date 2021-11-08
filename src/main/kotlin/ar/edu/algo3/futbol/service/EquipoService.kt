@@ -1,11 +1,11 @@
-package org.uqbar.futbol.service
+package ar.edu.algo3.futbol.service
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.aggregation.Aggregation
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.stereotype.Service
-import org.uqbar.futbol.domain.Jugador
+import ar.edu.algo3.futbol.domain.Jugador
 
 @Service
 class EquipoService {

@@ -1,4 +1,4 @@
-package org.uqbar.futbol
+package ar.edu.algo3.futbol
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

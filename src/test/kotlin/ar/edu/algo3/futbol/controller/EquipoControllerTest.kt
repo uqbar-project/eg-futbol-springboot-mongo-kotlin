@@ -1,4 +1,4 @@
-package org.uqbar.futbol.controller
+package ar.edu.algo3.futbol.controller
 
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -12,9 +12,9 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import org.uqbar.futbol.domain.Equipo
-import org.uqbar.futbol.domain.Jugador
-import org.uqbar.futbol.repository.EquipoRepository
+import ar.edu.algo3.futbol.domain.Equipo
+import ar.edu.algo3.futbol.domain.Jugador
+import ar.edu.algo3.futbol.repository.EquipoRepository
 
 @SpringBootTest
 @AutoConfigureMockMvc
