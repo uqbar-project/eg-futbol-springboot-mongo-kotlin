@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.stereotype.Service
 import ar.edu.algo3.futbol.domain.Jugador
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class EquipoService {
@@ -13,11 +14,13 @@ class EquipoService {
     @Autowired
     lateinit var mongoTemplate: MongoTemplate
 
+    @Transactional(readOnly = true)
     fun jugadoresDelEquipo(nombreEquipo: String): MutableList<Jugador> {
         val matchOperation = Aggregation.match(Criteria.where("equipo").regex(nombreEquipo, "i"))
         return Aggregation.newAggregation(matchOperation, unwindJugadores(), projectJugadores()).query()
     }
 
+    @Transactional(readOnly = true)
     fun jugadoresPorNombre(nombreJugador: String): MutableList<Jugador> {
         val matchOperation = Aggregation.match(Criteria.where("jugadores.nombre").regex(nombreJugador, "i"))
         return Aggregation.newAggregation(unwindJugadores(), matchOperation, projectJugadores()).query()

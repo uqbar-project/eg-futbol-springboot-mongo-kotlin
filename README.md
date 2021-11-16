@@ -108,25 +108,36 @@ entonces el output será
 
 Ahora que sabemos cómo ejecutar la consulta en Mongo, el controller llamará a una clase repositorio que implementaremos nosotros, ya que la anotación `@Query` todavía no tiene soporte completo para operaciones de agregación.
 
-```xtend
-def jugadoresDelEquipo(String nombreEquipo) {
-	val matchOperation = Aggregation.match(Criteria.where("equipo").regex(nombreEquipo, "i")) // "i" es por case insensitive
-	Aggregation.newAggregation(matchOperation, unwindJugadores, projectJugadores).query
-}
+```kt
+@GetMapping("/equipo/{nombreEquipo}")
+fun getJugadoresDeEquipo(@PathVariable nombreEquipo: String) =
+  equipoService.jugadoresDelEquipo(nombreEquipo)
+``` 
 
-def unwindJugadores() {
-	Aggregation.unwind("jugadores")
-}
+El service a su vez arma el query:
 
-def projectJugadores() {
-	Aggregation.project("$jugadores.nombre", "$jugadores.posicion")
-}
+```kt
+@Service
+class EquipoService {
 
-// extension method para ejecutar la consulta	
-def query(Aggregation aggregation) {
-	val AggregationResults<Jugador> result = mongoTemplate.aggregate(aggregation, "equipos", Jugador)
-	return result.mappedResults
-}
+  @Autowired
+  lateinit var mongoTemplate: MongoTemplate
+
+  @Transactional(readOnly = true)
+  fun jugadoresDelEquipo(nombreEquipo: String): MutableList<Jugador> {
+    val matchOperation = Aggregation.match(Criteria.where("equipo").regex(nombreEquipo, "i"))
+    return Aggregation.newAggregation(matchOperation, unwindJugadores(), projectJugadores()).query()
+  }
+
+  private fun unwindJugadores() = Aggregation.unwind("jugadores")
+
+  private fun projectJugadores() = Aggregation.project("\$jugadores.nombre", "\$jugadores.posicion")
+
+  // extension method para ejecutar la consulta
+  private fun Aggregation.query(): MutableList<Jugador> {
+    val result = mongoTemplate.aggregate(this, "equipos", Jugador::class.java)
+    return result.mappedResults
+  }
 ```
 
 Las operaciones son bastante similares, pero **atención que el orden es importante y puede ocasionar problemas en la devolución correcta de datos**:
@@ -135,6 +146,8 @@ Las operaciones son bastante similares, pero **atención que el orden es importa
 - luego el unwind para aplanar la estructura a una lista de jugadores
 - por último definimos los atributos que queremos mostrar
 - y luego tenemos un `extension method` para transformar el pipeline de agregación en una lista de elementos para el controller, que luego serializará a json
+
+Por último, la anotación `@Transactional(readOnly = true)` le dice a Springboot que no será necesario generar una transacción para las operaciones involucradas en el método.
 
 ## Búsqueda de jugadores por nombre
 
@@ -172,16 +185,17 @@ La consulta funciona totalmente distinto, porque en este caso
 
 Esta misma consideración hay que hacerla cuando definamos la Aggregation:
 
-```xtend
-def jugadoresPorNombre(String nombreJugador) {
-	val matchOperation = Aggregation.match(Criteria.where("jugadores.nombre").regex(nombreJugador, 'i'))
-	Aggregation.newAggregation(unwindJugadores, matchOperation, projectJugadores).query
+```kt
+@Transactional(readOnly = true)
+fun jugadoresPorNombre(nombreJugador: String): MutableList<Jugador> {
+  val matchOperation = Aggregation.match(Criteria.where("jugadores.nombre").regex(nombreJugador, "i"))
+  return Aggregation.newAggregation(unwindJugadores(), matchOperation, projectJugadores()).query()
 }
 ```
 
 ## Testeo de integración
 
-El approach que vamos a tomar para los tests es ciertamente cuestionable, pero para mantener el ejemplo simple vamos a asumir que en la base de documentos tenemos la información generada por el script `crear_datos.js`. Con eso en cuenta testearemos
+El approach que vamos a tomar para los tests va a crear su propio juego de datos independiente del que utiliza la app.
 
 - la búsqueda de jugadores por nombre
     - clase de equivalencia 1: un jugador que está en un equipo
@@ -191,59 +205,48 @@ El approach que vamos a tomar para los tests es ciertamente cuestionable, pero p
 
 Es interesante remarcar que a este punto no queremos utilizar stubs ni mocks, porque queremos probar que nuestros componentes se conectan a la base y recuperan la información como nosotros queremos. Estamos construyendo entonces tests de integración, que en Springboot se anotan de la siguiente manera:
 
-```xtend
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@AutoConfigureDataMongo
-@ExtendWith(SpringExtension)
-@DisplayName("Dados varios planteles con jugadores")
-class EquipoRepositoryTest {
+```kt
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
+@DisplayName("Dado un controller de equipos")
+class EquipoControllerTest {
 ```
 
 La anotación @AutoConfigureDataMongo es importante para importar la configuración local que se inyecta en la dependencia a MongoTemplate (la que usa nuestra clase repositorio).
 
-Siguiendo con nuestra idea original, implementemos los tres tests:
+Siguiendo con nuestra idea original, vemos uno de los tests:
 
-```xtend
+```kt
 @Test
-@DisplayName("se puede buscar un jugador en base a un equipo")
-def void testRiquelmeEsJugadorDeBoca() {
-	assertTrue(equipoRepository.jugadoresDelEquipo(BOCA).contieneJugador(RIQUELME))
-}
-
-@Test
-@DisplayName("un jugador que no está en un equipo no aparece en el plantel")
-def void testPalermoYaNoEsJugadorDeBoca() {
-	assertFalse(equipoRepository.jugadoresDelEquipo(BOCA).contieneJugador(PALERMO))
-}
-
-// extension method - helper para validar si el nombre de un jugador está en una lista de objetos Jugador
-def boolean contieneJugador(List<Jugador> jugadores, String unJugador) {
-	jugadores.exists [ jugador | jugador.nombre.toLowerCase.contains(unJugador.toLowerCase) ]
-}
-
-@Test
-@DisplayName("se puede navegar directamente los jugadores a pesar de estar embebidos en los planteles")
-def void testHayDosJugadoresQueComienzanConCasta() {
-	val jugadores = equipoRepository.jugadoresPorNombre("Casta")
-	assertEquals(2, jugadores.size)
+fun `podemos conocer el plantel de un equipo`() {
+    mockMvc.perform(
+        MockMvcRequestBuilders.get("/equipo/Flandria")
+            .contentType(MediaType.APPLICATION_JSON)
+    )
+        .andExpect(MockMvcResultMatchers.status().isOk)
+        .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(5))
+        .andExpect(MockMvcResultMatchers.jsonPath("$[0].nombre").value("Andrés Camacho"))
 }
 ```
 
-Para que el script de Travis funcione correctamente, levantamos el servicio de Mongo primero y luego invocamos al script que crea los equipos de ejemplo:
+La configuración que definimos para pegarle a una base de datos en memoria es:
 
 ```yml
-...
-services: mongodb
-
-before_script:
-  - sleep 15
-  - mongo localhost:27017/local ./scripts/crear_datos.js 
-...
+spring:
+  data:
+    mongodb:
+      database: local
+      host: localhost
+      port: 0
+      repositories:
+        enabled: true
 ```
 
-## Alternativas al test que presentamos
+(pueden ver el archivo `application.yml` y las dependencias extras a "de.flapdoodle.embed:de.flapdoodle.embed.mongo")
 
-Una mejor idea podría ser que el test trabaje con una colección de documentos in-memory, de la misma manera que H2 lo hace para JPA. El lector interesado puede investigar [un ejemplo usando Flapdoodle | Embedded MongoDB](https://www.baeldung.com/spring-boot-embedded-mongodb) (también pueden ver el [proyecto en Github](https://www.baeldung.com/spring-boot-embedded-mongodb)).
+El lector puede ver los demás tests así como la generación del juego de datos.
 
 ## Open API / Swagger
 
@@ -252,3 +255,7 @@ Como de costumbre, pueden investigar los endpoints en el navegador mediante la s
 ```url
 http://localhost:8080/swagger-ui/index.html#
 ```
+
+## Cómo testear la aplicación en Insomnia
+
+Te dejamos [el archivo de Insomnia](./Futbol_Insomnia.json) con ejemplos para probarlo.
