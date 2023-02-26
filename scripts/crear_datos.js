@@ -1,4 +1,4 @@
-db.createCollection('equipos')
+db.createCollection('equipos');
 
 db.equipos.insertOne({
     equipo: "Tigre", jugadores: [{nombre: "Albil, Damián", posicion: "Arquero"}
@@ -37,7 +37,7 @@ db.equipos.insertOne({
         , {nombre: "Sand, José", posicion: "Delantero"}
         , {nombre: "Vitti, Pablo", posicion: "Delantero"}
     ]
-})
+});
 
 
 db.equipos.insertOne({
@@ -78,7 +78,7 @@ db.equipos.insertOne({
         , {nombre: "Martínez, Juan Manuel", posicion: "Delantero"}
         , {nombre: "Riaño, Claudio", posicion: "Delantero"}
     ]
-})
+});
 
 db.equipos.insertOne({
     equipo: "Ríver", jugadores: [{nombre: "Barovero, Marcelo", posicion: "Arquero"}
@@ -109,4 +109,4 @@ db.equipos.insertOne({
         , {nombre: "Mora, Rodrigo", posicion: "Delantero"}
         , {nombre: "Simeone, Giovanni", posicion: "Delantero"}
     ]
-})
+});
