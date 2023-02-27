@@ -13,13 +13,19 @@ La base de datos se estructura en un documento jerárquico:
 * equipo
 * jugadores (no tienen un documento raíz sino que están embebidos dentro del equipo)
 
-## Instalación
+## Instalación del entorno Mongo
 
-Antes de correr los test, tenés que instalar una base de datos [MongoDB Community Edition](https://www.mongodb.com/) y levantar el server. En Windows, [levantan el servicio mongod](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/), en Linux desde una línea de comandos hacen
+Hace falta tener instalado [Docker](https://www.docker.com/). Una vez resuelto este paso abrí una consola de comandos y escribí
 
 ```bash
-$ sudo service mongod start
+docker-compose up
 ```
+
+Eso te levanta una base documental MongoDB en el puerto 27021, con usuario capo y contraseña eyra.
+
+Como cliente te recomendamos la herramienta Studio 3T. Para más detalles podés ver [el README del ejemplo de viajes](https://github.com/uqbar-project/eg-viajes-mongodb) que te explica los pasos de instalación.
+
+## Scripts
 
 En la carpeta [scripts](scripts) vas a encontrar dos archivos:
 
@@ -28,15 +34,9 @@ En la carpeta [scripts](scripts) vas a encontrar dos archivos:
 
 Acá te mostramos cómo correr los scripts con [Robo 3T](https://robomongo.org/) un cliente MongoDB con algunas prestaciones gráficas:
 
-![video](video/demo.gif)
+![video](video/demo2.gif)
 
-**Los scripts deberías ejecutarlos en la base de datos "local"**. Si elegís otra base tenés que modificar el string de conexión en la clase Xtend _RepoJugadoresMongoDB_.
-
-Luego sí, podés correr los tests del proyecto, que verifica
-
-* que Palermo no está en el plantel de Boca del juego de datos
-* que Riquelme sí está en el plantel de Boca del juego de datos
-* que hay dos jugadores que comienzan con "Casta" (Castagno de Tigre y Dino Castaño de Boca)
+**Los scripts deberías ejecutarlos en la base de datos "local"**. Si elegís otra base tenés que modificar el string de conexión el archivo [`application.yml`](./src/main/resources/application.yml).
 
 ## Las consultas
 
