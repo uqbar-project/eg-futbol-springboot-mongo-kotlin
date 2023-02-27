@@ -244,7 +244,7 @@ spring:
         enabled: true
 ```
 
-(pueden ver el archivo `application.yml` y las dependencias extras a "de.flapdoodle.embed:de.flapdoodle.embed.mongo")
+(pueden ver el archivo [`application-test.yml`](./src/main/resources/application-test.yml))
 
 El lector puede ver los demás tests así como la generación del juego de datos.
 
