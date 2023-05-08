@@ -1,11 +1,10 @@
+# base de datos de testing
 spring:
   data:
     mongodb:
-      database: local
-      host: localhost
-      port: 0
-      repositories:
-        enabled: true
+      uri: mongodb://capo:eyra@127.0.0.1:27021/futbol?authSource=admin
+      database: futbol_test
+
 logging:
   level:
     org.springframework.data: DEBUG

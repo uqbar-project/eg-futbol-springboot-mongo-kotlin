@@ -10,8 +10,8 @@ Testea el mapeo de una [aplicación de planteles de equipos de fútbol](https://
 
 La base de datos se estructura en un documento jerárquico:
 
-* equipo
-* jugadores (no tienen un documento raíz sino que están embebidos dentro del equipo)
+- equipo
+- jugadores (no tienen un documento raíz sino que están embebidos dentro del equipo)
 
 ## Instalación del entorno Mongo
 
@@ -231,20 +231,23 @@ fun `podemos conocer el plantel de un equipo`() {
 }
 ```
 
-La configuración que definimos para pegarle a una base de datos en memoria es:
+La base de datos no está en memoria, sino que es una propia de testing
+
+- eso permite que no se pisen los datos de la base usada por la aplicación
+- los tests levantan un juego de datos y borran toda la información al final
+- eso requiere que antes de ejecutar los tests debamos levantar la base mediante `docker compose up`
+- lo mismo debemos hacer en el build de Github Actions para que CI pase
 
 ```yml
+# base de datos de testing
 spring:
   data:
     mongodb:
-      database: local
-      host: localhost
-      port: 0
-      repositories:
-        enabled: true
+      uri: mongodb://capo:eyra@127.0.0.1:27021/futbol?authSource=admin
+      database: futbol_test
 ```
 
-(pueden ver el archivo [`application-test.yml`](./src/main/resources/application-test.yml))
+(pueden ver el archivo [`application-test.yml`](./src/main/resources/application-test.yml)).
 
 El lector puede ver los demás tests así como la generación del juego de datos.
 
