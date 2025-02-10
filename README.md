@@ -259,6 +259,10 @@ Como de costumbre, pueden investigar los endpoints en el navegador mediante la s
 http://localhost:8080/swagger-ui/index.html#
 ```
 
-## Cómo testear la aplicación en Insomnia
+## Cómo testear la aplicación
 
-Te dejamos [el archivo de Insomnia](./Futbol_Insomnia.json) con ejemplos para probarlo.
+Te dejamos clientes de ejemplo para
+
+- [Bruno](./Futbol_Bruno.json)
+- [Insomnia](./Futbol_Insomnia.json)
+- [Postman](./Futbol_Postman.json)
