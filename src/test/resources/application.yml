@@ -2,7 +2,7 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://capo:eyra@127.0.0.1:27021/futbol?authSource=admin
+      uri: mongodb://capo:eyra@127.0.0.1:27018/futbol?authSource=admin
       database: futbol_test
 
 logging:

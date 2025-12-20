@@ -5,9 +5,9 @@ services:
     container_name: mongo_futbol
     hostname: host-mongo
 
-    # mapeo el puerto de mi computadora 27021 contra el 27017 (importante porque es el default de mongo)
+    # mapeo el puerto de mi computadora 27018 contra el 27017 (importante porque es el default de mongo)
     ports:
-      - "27021:27017"
+      - "27018:27017"
     volumes:
       - ~/apps/mongo_futbol_db:/data/db
       - ~/apps/mongo_futbol_log:/var/log/mongodb/

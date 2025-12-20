@@ -21,7 +21,11 @@ Solo hace falta tener instalado Docker Desktop (el pack docker engine y docker c
 docker compose up
 ```
 
-Eso te levanta una base documental MongoDB en el puerto 27021, con usuario capo y contraseña eyra.
+Eso te levanta una base documental MongoDB en el puerto 27018, con usuario capo y contraseña eyra. El string de conexión es
+
+```bash
+mongodb://capo:eyra@127.0.0.1:27018/futbol?authSource=admin
+```
 
 Como cliente te recomendamos la herramienta Studio 3T. Para más detalles podés ver [el README del ejemplo de viajes](https://github.com/uqbar-project/eg-viajes-mongodb) que te explica los pasos de instalación.
 
@@ -31,10 +35,6 @@ En la carpeta [scripts](scripts) vas a encontrar dos archivos:
 
 * [crear_datos.js](scripts/crear_datos.js) para ejecutarlo en el shell de MongoDB (ejecutable mongo). Este script inserta datos de varios equipos de fútbol con sus jugadores.
 * [queries.js](scripts/queries.js) con queries de ejemplo para probar directamente en el shell.
-
-Acá te mostramos cómo correr los scripts con [Robo 3T](https://robomongo.org/) un cliente MongoDB con algunas prestaciones gráficas:
-
-![video](video/demo2.gif)
 
 **Los scripts deberías ejecutarlos en la base de datos "local"**. Si elegís otra base tenés que modificar el string de conexión el archivo [`application.yml`](./src/main/resources/application.yml).
 
@@ -243,7 +243,7 @@ La base de datos no está en memoria, sino que es una propia de testing
 spring:
   data:
     mongodb:
-      uri: mongodb://capo:eyra@127.0.0.1:27021/futbol?authSource=admin
+      uri: mongodb://capo:eyra@127.0.0.1:27018/futbol?authSource=admin
       database: futbol_test
 ```
 
